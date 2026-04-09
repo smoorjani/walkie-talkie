@@ -65,6 +65,71 @@ WalkieTalkie/WalkieTalkie/       # Xcode project — iOS app
 └── VolumeButtonDetector.swift   # Volume button detection via KVO
 ```
 
+## iOS development guide
+
+### Prerequisites
+
+- **Xcode** (free from the Mac App Store)
+- **Apple ID** — any free Apple account works for signing
+- **iPhone** connected via USB (volume buttons don't work in the simulator)
+
+### Creating the Xcode project from scratch
+
+If you're setting up from the source files (not opening the included `.xcodeproj`):
+
+1. Open Xcode → File → New → Project → **iOS App**
+2. Product Name: `WalkieTalkie`
+3. Interface: **SwiftUI**, Language: **Swift**
+4. Team: select your Apple ID (**Personal Team**)
+5. Organization Identifier: anything (e.g. `com.yourname`)
+6. Testing System: **None**, Storage: **None**
+7. Save the project
+8. Delete the auto-generated `ContentView.swift` and `WalkieTalkieApp.swift`
+9. Drag the Swift files from `WalkieTalkie/WalkieTalkie/` into the Xcode project navigator
+10. If prompted about an Objective-C bridging header, select **Don't Create**
+
+### Signing (free)
+
+1. In Xcode, click the project in the sidebar → select the **WalkieTalkie** target
+2. Go to **Signing & Capabilities** tab
+3. Team → select your Apple ID (Personal Team)
+4. Xcode will auto-create a provisioning profile
+
+Free signing expires every **7 days**. When it expires, just plug in and hit Run again from Xcode.
+
+### Required Info.plist keys
+
+In the target → **Info** tab → Custom iOS Target Properties, add:
+
+| Key | Type | Value |
+|-----|------|-------|
+| Bonjour services | Array | Item 0: `_walkietalkie._udp` |
+| Privacy - Local Network Usage Description | String | `Connect to WalkieTalkie server on your Mac` |
+| Privacy - Microphone Usage Description | String | `Needed for push-to-talk` |
+
+Without the Bonjour and Local Network keys, auto-discovery will silently fail.
+
+### Building and installing
+
+1. Plug your iPhone in via USB
+2. At the top of Xcode, select your iPhone as the build target (not a simulator)
+3. Hit **Run** (▶) or Cmd+R
+4. First time: Xcode may say "device not ready" — wait for it to process symbol files
+5. On iPhone: if you see "Untrusted Developer", go to **Settings → General → VPN & Device Management** → tap your developer profile → **Trust**
+
+### Troubleshooting
+
+| Issue | Fix |
+|-------|-----|
+| "iOS X.X is not installed" | Click **Get** in Xcode's toolbar to download device support |
+| "Untrusted Developer" on iPhone | Settings → General → VPN & Device Management → Trust |
+| App expires after 7 days | Plug in and hit Run in Xcode again |
+| `Multiple commands produce Info.plist` | Delete any manually added `Info.plist` from the project — use Xcode's Info tab instead |
+| `does not conform to ObservableObject` | Ensure `import Combine` is at the top of the file |
+| White screen / no UI | Check for duplicate `ContentView.swift` files — delete the Xcode-generated one |
+| Volume buttons don't work | Must run on a real iPhone, not the simulator |
+| Bonjour discovery stuck on "Searching" | Check that Bonjour services and Local Network keys are in Info.plist |
+
 ## Notes
 
 - Volume detection only works on a real iPhone, not the simulator
